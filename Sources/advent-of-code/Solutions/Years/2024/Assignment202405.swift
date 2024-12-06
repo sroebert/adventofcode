@@ -6,31 +6,29 @@ struct Assignment202405: Assignment {
     
     // MARK: - Assignment
     
-    func solvePart1() async throws -> String {
-        let (rules, updates) = try getRulesAndUpdates()
+    func solvePart1() async throws -> AssignmentOutput {
+        let (rules, updates) = try await getRulesAndUpdates()
         
-        let count = updates.map { update in
+        return updates.map { update in
             update.isValidUpdate(forRules: rules) ? update[update.count / 2] : 0
         }.reduce(0, +)
-        return String(count)
     }
     
-    func solvePart2() async throws -> String {
-        let (rules, updates) = try getRulesAndUpdates()
+    func solvePart2() async throws -> AssignmentOutput {
+        let (rules, updates) = try await getRulesAndUpdates()
         
-        let count = updates.map { update in
+        return updates.map { update in
             guard let fixed = update.fixUpdateIfNeeded(forRules: rules) else {
                 return 0
             }
             return fixed[update.count / 2]
         }.reduce(0, +)
-        return String(count)
     }
     
     // MARK: - Utils
     
-    private func getRulesAndUpdates() throws -> (rules: Dictionary<Int, Set<Int>>, updates: [[Int]]) {
-        let parts = getInput().split(separator: "\n\n")
+    private func getRulesAndUpdates() async throws -> (rules: Dictionary<Int, Set<Int>>, updates: [[Int]]) {
+        let parts = try await getInput().split(separator: "\n\n")
         guard parts.count == 2 else {
             throw InputError(message: "Too many input parts")
         }

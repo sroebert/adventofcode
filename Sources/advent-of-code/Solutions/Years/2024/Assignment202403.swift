@@ -2,13 +2,12 @@ struct Assignment202403: Assignment {
     
     // MARK: - Assignment
     
-    func solvePart1() async throws -> String {
-        let count = getInput().multiplyCount
-        return String(count)
+    func solvePart1() async throws -> AssignmentOutput {
+        try await getInput().multiplyCount
     }
     
-    func solvePart2() async throws -> String {
-        var current = Substring(getInput())
+    func solvePart2() async throws -> AssignmentOutput {
+        var current = try await Substring(getInput())
         
         var isEnabled = true
         var count = 0
@@ -16,7 +15,7 @@ struct Assignment202403: Assignment {
         while true {
             guard let range = current.range(of: isEnabled ? Self.disableInstruction : Self.enableInstruction) else {
                 count += isEnabled ? current.multiplyCount : 0
-                return String(count)
+                return count
             }
             
             if isEnabled {

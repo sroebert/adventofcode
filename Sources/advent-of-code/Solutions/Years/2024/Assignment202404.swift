@@ -2,8 +2,8 @@ struct Assignment202404: Assignment {
     
     // MARK: - Assignment
     
-    func solvePart1() async throws -> String {
-        let letters = mapInput(Array.init)
+    func solvePart1() async throws -> AssignmentOutput {
+        let letters = try await mapInput(Array.init)
         
         let word = "XMAS"
         let reverseWord = word.reversed()
@@ -27,11 +27,11 @@ struct Assignment202404: Assignment {
                 }
             }
         }
-        return String(count)
+        return count
     }
     
-    func solvePart2() async throws -> String {
-        let letters = mapInput(Array.init)
+    func solvePart2() async throws -> AssignmentOutput {
+        let letters = try await mapInput(Array.init)
         
         let word = "MAS"
         let reverseWord = word.reversed()

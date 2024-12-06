@@ -2,8 +2,8 @@ struct Assignment202402: Assignment {
     
     // MARK: - Assignment
     
-    func solvePart1() async throws -> String {
-        let count = mapInput { line in
+    func solvePart1() async throws -> AssignmentOutput {
+        try await mapInput { line in
             line
                 .split(whereSeparator: \.isWhitespace)
                 .compactMap { Int($0) }
@@ -11,11 +11,10 @@ struct Assignment202402: Assignment {
         }.count {
             $0
         }
-        return String(count)
     }
     
-    func solvePart2() async throws -> String {
-        let count = mapInput { line in
+    func solvePart2() async throws -> AssignmentOutput {
+        try await mapInput { line in
             line
                 .split(whereSeparator: \.isWhitespace)
                 .compactMap { Int($0) }
@@ -23,7 +22,6 @@ struct Assignment202402: Assignment {
         }.count {
             $0
         }
-        return String(count)
     }
 }
 

@@ -2,14 +2,14 @@ struct Assignment202406: Assignment {
     
     // MARK: - Assignment
     
-    func solvePart1() async throws -> String {
-        let (map, patrollingGuard) = try parseInput()
+    func solvePart1() async throws -> AssignmentOutput {
+        let (map, patrollingGuard) = try await parseInput()
         let (visitedSpaces, _, _) = map.determineGuardMovements(patrollingGuard)
-        return String(visitedSpaces)
+        return visitedSpaces
     }
     
-    func solvePart2() async throws -> String {
-        let (map, patrollingGuard) = try parseInput()
+    func solvePart2() async throws -> AssignmentOutput {
+        let (map, patrollingGuard) = try await parseInput()
         
         var count = 0
         map.determineGuardMovements(patrollingGuard) { updatedMap, patrollingGuard, nextPosition in
@@ -22,7 +22,7 @@ struct Assignment202406: Assignment {
             }
         }
         
-        return String(count)
+        return count
     }
     
     // MARK: - Utils
@@ -178,8 +178,8 @@ struct Assignment202406: Assignment {
         }
     }
     
-    private func parseInput() throws -> (map: Map, guard: Guard) {
-        let map = mapInput(Array.init)
+    private func parseInput() async throws -> (map: Map, guard: Guard) {
+        let map = try await mapInput(Array.init)
         
         for (y, row) in map.enumerated() {
             for (x, character) in row.enumerated() {
