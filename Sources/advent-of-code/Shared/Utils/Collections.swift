@@ -41,23 +41,39 @@ extension Collection {
     }
 }
 
-extension Collection where Self: Sendable, Element: Sendable {
-    func concurrentCount(_ calculate: @escaping @Sendable (Element) -> Int) async -> Int {
+extension Sequence where Self: Sendable {
+    func concurrentMapAndReduce<T: Sendable>(
+        _ initialResult: T,
+        transform: @escaping @Sendable (Element) -> T,
+        reduce: @escaping @Sendable (T, T) -> T
+    ) async -> T {
         let batchCount = ProcessInfo.processInfo.activeProcessorCount - 2
         guard batchCount > 1 else {
-            return reduce(0) { $0 + calculate($1) }
+            return self.reduce(initialResult) { reduce($0, transform($1)) }
         }
         
-        return await withTaskGroup(of: Int.self) { group in
+        return await withTaskGroup(of: T.self) { group in
             for taskIndex in 0..<batchCount {
                 group.addTask {
-                    return dropFirst(taskIndex).striding(by: batchCount).reduce(0) {
-                        $0 + calculate($1)
+                    return dropFirst(taskIndex).striding(by: batchCount).reduce(initialResult) {
+                        reduce($0, transform($1))
                     }
                 }
             }
             
-            return await group.reduce(0, +)
+            return await group.reduce(initialResult, reduce)
+        }
+    }
+    
+    func concurrentCount(_ calculate: @escaping @Sendable (Element) -> Int) async -> Int {
+        await concurrentMapAndReduce(0, transform: calculate) {
+            $0 + $1
+        }
+    }
+    
+    func concurrentMax(minimum: Int, _ calculate: @escaping @Sendable (Element) -> Int) async -> Int {
+        await concurrentMapAndReduce(minimum, transform: calculate) {
+            $0 > $1 ? $0 : $1
         }
     }
 }
