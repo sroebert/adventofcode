@@ -25,6 +25,10 @@ struct Assignment202406: Assignment {
         return count
     }
     
+    var isSlowInDebug: Bool {
+        return true
+    }
+    
     // MARK: - Utils
     
     private struct Map {

@@ -67,6 +67,10 @@ struct Assignment202404: Assignment {
         }
         return String(count)
     }
+    
+    var isSlowInDebug: Bool {
+        return true
+    }
 }
 
 private struct SearchCollection: RandomAccessCollection {

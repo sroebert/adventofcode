@@ -1,4 +1,7 @@
 struct Assignment202422: Assignment {
+    
+    // MARK: - Assignment
+    
     func solvePart1() async throws -> AssignmentOutput {
         return ""
     }
