@@ -3,7 +3,6 @@ struct Assignment201515: Assignment {
     // MARK: - Assignment
     
     func solvePart1() async throws -> AssignmentOutput {
-        let ingredients = try await getIngredients()
         return ""
     }
     
