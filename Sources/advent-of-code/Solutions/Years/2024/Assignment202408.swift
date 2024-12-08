@@ -32,6 +32,7 @@ struct Assignment202408: Assignment {
     
     func solvePart2() async throws -> AssignmentOutput {
         let map = try await getMap()
+        let mapRange = 0..<map.size
         
         var antinodeMap = Array(repeating: Array(repeating: false, count: map.size), count: map.size)
         var count = 0
@@ -45,47 +46,21 @@ struct Assignment202408: Assignment {
                 let stepX = diffX / gcd
                 let stepY = diffY / gcd
                 
-                let stepsToStartX = if stepX == 0 {
-                    Int.max
-                } else if stepX > 0 {
-                    antennaCombination[0].x / stepX
-                } else {
-                    (map.size - 1 - antennaCombination[0].x) / -stepX
-                }
+                var x = antennaCombination[0].x
+                var y = antennaCombination[0].y
+                repeat {
+                    if !antinodeMap[y][x] {
+                        antinodeMap[y][x] = true
+                        count += 1
+                    }
+                    
+                    x -= stepX
+                    y -= stepY
+                } while mapRange.contains(x) && mapRange.contains(y)
                 
-                let stepsToStartY = if stepY == 0 {
-                    Int.max
-                } else if stepY > 0 {
-                    antennaCombination[0].y / stepY
-                } else {
-                    (map.size - 1 - antennaCombination[0].y) / -stepY
-                }
-                
-                let stepsToStart = min(stepsToStartX, stepsToStartY)
-                let startX = antennaCombination[0].x - stepX * stepsToStart
-                let startY = antennaCombination[0].y - stepY * stepsToStart
-                
-                let stepsX = if stepX == 0 {
-                    Int.max
-                } else if stepX > 0 {
-                    (map.size - 1 - startX) / stepX
-                } else {
-                    startX / -stepX
-                }
-                
-                let stepsY = if stepY == 0 {
-                    Int.max
-                } else if stepY > 0 {
-                    (map.size - 1 - startY) / stepY
-                } else {
-                    startY / -stepY
-                }
-                
-                let steps = min(stepsX, stepsY)
-                
-                var x = startX
-                var y = startY
-                for _ in 0...steps {
+                x = antennaCombination[0].x + stepX
+                y = antennaCombination[0].y + stepY
+                while mapRange.contains(x) && mapRange.contains(y) {
                     if !antinodeMap[y][x] {
                         antinodeMap[y][x] = true
                         count += 1
