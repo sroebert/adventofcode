@@ -175,14 +175,29 @@ struct Assignment201521: Assignment {
     }
     
     private func getBoss() async throws -> Person {
-        let numbers = try await compactMapInput { line in
-            line.split(separator: ": ").last.flatMap { Int($0) }
+        var boss = Person(hitPoints: 0, damage: 0, armor: 0)
+        
+        let regex = /(?<stat>Hit Points|Damage|Armor): (?<value>\d+)/
+        try await getStreamedInput { line in
+            guard
+                let match = line.wholeMatch(of: regex),
+                let statValue = Int(match.output.value)
+            else {
+                throw InputError(message: "Invalid input")
+            }
+            
+            switch match.output.stat {
+            case "Hit Points":
+                boss.hitPoints = statValue
+            case "Damage":
+                boss.damage = statValue
+            case "Armor":
+                boss.armor = statValue
+            default:
+                throw InputError(message: "Invalid input")
+            }
         }
         
-        guard numbers.count == 3 else {
-            throw InputError(message: "Invalid input")
-        }
-        
-        return Person(hitPoints: numbers[0], damage: numbers[1], armor: numbers[2])
+        return boss
     }
 }
