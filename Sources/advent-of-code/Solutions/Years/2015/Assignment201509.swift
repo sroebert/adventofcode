@@ -27,6 +27,10 @@ struct Assignment201509: Assignment {
         return maxDistance
     }
     
+    var isSlowInDebug: Bool {
+        return true
+    }
+    
     // MARK: - Utils
     
     private struct Route {
