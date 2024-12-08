@@ -4,23 +4,24 @@ struct Assignment202408: Assignment {
     
     func solvePart1() async throws -> AssignmentOutput {
         let map = try await getMap()
-        let mapRange = 0..<map.size
+        let xRange = 0..<map.columns
+        let yRange = 0..<map.rows
         
-        var antinodeMap = Array(repeating: Array(repeating: false, count: map.size), count: map.size)
+        var antinodeMap = Array(repeating: Array(repeating: false, count: map.columns), count: map.rows)
         var count = 0
         
         for (_, antennas) in map.antennas {
             for antennaCombination in antennas.combinations(ofCount: 2) {
                 let firstAntinodeX = antennaCombination[0].x + (antennaCombination[0].x - antennaCombination[1].x)
                 let firstAntinodeY = antennaCombination[0].y + (antennaCombination[0].y - antennaCombination[1].y)
-                if mapRange.contains(firstAntinodeX) && mapRange.contains(firstAntinodeY) && !antinodeMap[firstAntinodeY][firstAntinodeX] {
+                if xRange.contains(firstAntinodeX) && yRange.contains(firstAntinodeY) && !antinodeMap[firstAntinodeY][firstAntinodeX] {
                     count += 1
                     antinodeMap[firstAntinodeY][firstAntinodeX] = true
                 }
                 
                 let secondAntinodeX = antennaCombination[1].x - (antennaCombination[0].x - antennaCombination[1].x)
                 let secondAntinodeY = antennaCombination[1].y - (antennaCombination[0].y - antennaCombination[1].y)
-                if mapRange.contains(secondAntinodeX) && mapRange.contains(secondAntinodeY) && !antinodeMap[secondAntinodeY][secondAntinodeX] {
+                if xRange.contains(secondAntinodeX) && yRange.contains(secondAntinodeY) && !antinodeMap[secondAntinodeY][secondAntinodeX] {
                     count += 1
                     antinodeMap[secondAntinodeY][secondAntinodeX] = true
                 }
@@ -32,9 +33,10 @@ struct Assignment202408: Assignment {
     
     func solvePart2() async throws -> AssignmentOutput {
         let map = try await getMap()
-        let mapRange = 0..<map.size
+        let xRange = 0..<map.columns
+        let yRange = 0..<map.rows
         
-        var antinodeMap = Array(repeating: Array(repeating: false, count: map.size), count: map.size)
+        var antinodeMap = Array(repeating: Array(repeating: false, count: map.columns), count: map.rows)
         var count = 0
         
         for (_, antennas) in map.antennas {
@@ -56,11 +58,11 @@ struct Assignment202408: Assignment {
                     
                     x -= stepX
                     y -= stepY
-                } while mapRange.contains(x) && mapRange.contains(y)
+                } while xRange.contains(x) && yRange.contains(y)
                 
                 x = antennaCombination[0].x + stepX
                 y = antennaCombination[0].y + stepY
-                while mapRange.contains(x) && mapRange.contains(y) {
+                while xRange.contains(x) && yRange.contains(y) {
                     if !antinodeMap[y][x] {
                         antinodeMap[y][x] = true
                         count += 1
@@ -83,16 +85,17 @@ struct Assignment202408: Assignment {
     }
     
     private struct Map {
-        var size: Int
+        var columns: Int
+        var rows: Int
         var antennas: [Character: [Antenna]]
     }
     
     private func getMap() async throws -> Map {
-        var map = Map(size: 0, antennas: [:])
+        var map = Map(columns: 0, rows: 0, antennas: [:])
         
         var y = 0
         try await getStreamedInput { line in
-            map.size = Int(line.count)
+            map.columns = Int(line.count)
             
             line.enumerated().forEach { x, character in
                 if character != "." {
@@ -104,6 +107,7 @@ struct Assignment202408: Assignment {
             
             y += 1
         }
+        map.rows = y
         
         return map
     }
