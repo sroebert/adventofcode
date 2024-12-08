@@ -99,9 +99,7 @@ struct Assignment202408: Assignment {
             
             line.enumerated().forEach { x, character in
                 if character != "." {
-                    var antennas = map.antennas[character, default: []]
-                    antennas.append(Antenna(x: x, y: y))
-                    map.antennas[character] = antennas
+                    map.antennas[character, default: []].append(Antenna(x: x, y: y))
                 }
             }
             

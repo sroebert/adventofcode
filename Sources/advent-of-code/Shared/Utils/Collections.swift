@@ -76,6 +76,12 @@ extension Sequence where Self: Sendable {
             $0 > $1 ? $0 : $1
         }
     }
+    
+    func concurrentMin(maximum: Int, _ calculate: @escaping @Sendable (Element) -> Int) async -> Int {
+        await concurrentMapAndReduce(maximum, transform: calculate) {
+            $0 < $1 ? $0 : $1
+        }
+    }
 }
 
 extension RandomAccessCollection {

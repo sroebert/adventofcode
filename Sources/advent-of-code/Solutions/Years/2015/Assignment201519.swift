@@ -82,9 +82,7 @@ struct Assignment201519: Assignment {
             
             let search = String(lineParts[0])
             
-            var replacementArray = replacements[search, default: []]
-            replacementArray.append(String(lineParts[1]))
-            replacements[search] = replacementArray
+            replacements[search, default: []].append(String(lineParts[1]))
         }
         
         return (replacements, String(parts[1].trimming(while: \.isWhitespace)))
