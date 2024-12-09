@@ -22,6 +22,10 @@ struct Assignment202014: Assignment {
         return memory.reduce(0) { $0 + $1.value }
     }
     
+    var isSlowInDebug: Bool {
+        return true
+    }
+    
     // MARK: - Utils
     
     private struct Mask {

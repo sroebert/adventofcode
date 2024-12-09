@@ -25,6 +25,10 @@ struct Assignment202405: Assignment {
         }.reduce(0, +)
     }
     
+    var isSlowInDebug: Bool {
+        return true
+    }
+    
     // MARK: - Utils
     
     private func getRulesAndUpdates() async throws -> (rules: Dictionary<Int, Set<Int>>, updates: [[Int]]) {
