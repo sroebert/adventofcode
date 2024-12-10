@@ -1,4 +1,5 @@
 import RegexBuilder
+
 struct Assignment201506: Assignment {
     
     // MARK: - Assignment
@@ -52,11 +53,6 @@ struct Assignment201506: Assignment {
     }
     
     // MARK: - Utils
-    
-    private struct Point: Hashable {
-        var x: Int
-        var y: Int
-    }
     
     private enum Action: String {
         case toggle

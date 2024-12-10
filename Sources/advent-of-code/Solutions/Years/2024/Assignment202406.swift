@@ -34,13 +34,22 @@ struct Assignment202406: Assignment {
     private struct Map {
         var data: [[MapSpace]]
         
-        subscript(_ position: Position) -> MapSpace {
+        subscript(_ position: Point) -> MapSpace {
             get {
                 data[position.y][position.x]
             }
             mutating set {
                 data[position.y][position.x] = newValue
             }
+        }
+        
+        func contains(_ position: Point) -> Bool {
+            return (
+                position.x >= 0 &&
+                position.y >= 0 &&
+                position.x < columnCount &&
+                position.y < rowCount
+            )
         }
         
         var rowCount: Int {
@@ -54,7 +63,7 @@ struct Assignment202406: Assignment {
         @discardableResult
         func determineGuardMovements(
             _ patrollingGuard: Guard,
-            emptyStepHandler: ((_ map: Map, _ patrollingGuard: Guard, _ nextPosition: Position) -> Void) = { _, _, _ in }
+            emptyStepHandler: ((_ map: Map, _ patrollingGuard: Guard, _ nextPosition: Point) -> Void) = { _, _, _ in }
         ) -> (visitedSpaces: Int, loop: Bool, updatedMap: Map) {
             var map = self
             var patrollingGuard = patrollingGuard
@@ -64,7 +73,7 @@ struct Assignment202406: Assignment {
             
             while true {
                 let nextPosition = patrollingGuard.nextPosition
-                if nextPosition.isOutsideOfMap(map) {
+                if !map.contains(nextPosition) {
                     return (visitedSpaces, false, map)
                 }
                 
@@ -101,7 +110,7 @@ struct Assignment202406: Assignment {
     }
     
     private struct Guard {
-        var position: Position
+        var position: Point
         var direction: Directions
         
         mutating func rotate() {
@@ -119,7 +128,7 @@ struct Assignment202406: Assignment {
             }
         }
         
-        var nextPosition: Position {
+        var nextPosition: Point {
             var nextPosition = position
             switch direction {
             case .up:
@@ -134,15 +143,6 @@ struct Assignment202406: Assignment {
                 break
             }
             return nextPosition
-        }
-    }
-    
-    private struct Position: Equatable {
-        var x: Int
-        var y: Int
-        
-        func isOutsideOfMap(_ map: Map) -> Bool {
-            return x < 0 || y < 0 || x >= map.columnCount || y >= map.rowCount
         }
     }
     
@@ -193,7 +193,7 @@ struct Assignment202406: Assignment {
                             $0.map { $0 == "#" ? .blocked : .empty }
                         }),
                         Guard(
-                            position: Position(x: x, y: y),
+                            position: Point(x: x, y: y),
                             direction: direction
                         )
                     )

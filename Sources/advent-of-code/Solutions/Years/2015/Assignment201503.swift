@@ -40,15 +40,6 @@ struct Assignment201503: Assignment {
     
     // MARK: - Utils
     
-    private struct Point: Hashable, Equatable {
-        var x: Int
-        var y: Int
-        
-        static func + (lhs: Self, rhs: Self) -> Point {
-            return Point(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
-        }
-    }
-    
     private func offset(for character: Character) -> Point {
         switch character {
         case ">":

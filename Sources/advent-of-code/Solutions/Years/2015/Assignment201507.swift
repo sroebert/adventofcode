@@ -1,4 +1,5 @@
 import RegexBuilder
+
 struct Assignment201507: Assignment {
     
     // MARK: - Assignment

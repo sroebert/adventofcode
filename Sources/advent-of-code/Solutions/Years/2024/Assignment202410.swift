@@ -18,18 +18,9 @@ struct Assignment202410: Assignment {
     
     private typealias Map = [[Int]]
     
-    private struct Position: Hashable {
-        var x: Int
-        var y: Int
-        
-        func step(_ offset: Position) -> Position {
-            Position(x: x + offset.x, y: y + offset.y)
-        }
-    }
-    
     private struct Trail {
-        var head: Position
-        var ends: Set<Position>
+        var head: Point
+        var ends: Set<Point>
         var rating: Int
     }
     
@@ -37,13 +28,6 @@ struct Assignment202410: Assignment {
         var trails: [Trail] = []
         let rows = map.count
         let columns = map[0].count
-        
-        let steps = [
-            Position(x: 0, y: -1),
-            Position(x: 1, y: 0),
-            Position(x: 0, y: 1),
-            Position(x: -1, y: 0),
-        ]
         
         for y in 0..<rows {
             for x in 0..<columns {
@@ -53,8 +37,8 @@ struct Assignment202410: Assignment {
                 }
                 
                 // Find trails
-                let head = Position(x: x, y: y)
-                var ends = Set<Position>()
+                let head = Point(x: x, y: y)
+                var ends = Set<Point>()
                 var rating: Int = 0
                 
                 var stack = [(height: 0, position: head)]
@@ -62,8 +46,7 @@ struct Assignment202410: Assignment {
                 while !stack.isEmpty {
                     let (height, position) = stack.removeLast()
                     
-                    for step in steps {
-                        let nextPosition = position.step(step)
+                    for nextPosition in position.cardinalNeighbors {
                         let nextHeight = map[nextPosition.y][nextPosition.x]
                         guard nextHeight - height == 1 else {
                             continue
