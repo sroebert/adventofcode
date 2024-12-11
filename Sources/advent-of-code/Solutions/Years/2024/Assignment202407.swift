@@ -52,8 +52,7 @@ struct Assignment202407: Assignment {
                 
                 // Concatination
                 if includeConcatination {
-                    let digitCount = floor(log10(Double(nextValue))) + 1
-                    let multiplier = Int(pow(10, digitCount))
+                    let multiplier = Int(pow(10, nextValue.numberOfDigits))
                     let splitValue = (pathValue - nextValue) / multiplier
                     if splitValue * multiplier + nextValue == pathValue {
                         paths.append((splitValue, pathNumbers))
