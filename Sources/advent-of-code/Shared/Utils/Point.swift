@@ -24,15 +24,15 @@ struct Point: Hashable {
         return newPoint
     }
     
-    var north: Point { Point(x: x, y: y + 1) }
-    var northEast: Point { Point(x: x + 1, y: y + 1) }
-    var northWest: Point { Point(x: x - 1, y: y + 1) }
+    var north: Point { Point(x: x, y: y - 1) }
+    var northEast: Point { Point(x: x + 1, y: y - 1) }
+    var northWest: Point { Point(x: x - 1, y: y - 1) }
     
     var east: Point { Point(x: x + 1, y: y) }
     
-    var south: Point { Point(x: x, y: y - 1) }
-    var southEast: Point { Point(x: x + 1, y: y - 1) }
-    var southWest: Point { Point(x: x - 1, y: y - 1) }
+    var south: Point { Point(x: x, y: y + 1) }
+    var southEast: Point { Point(x: x + 1, y: y + 1) }
+    var southWest: Point { Point(x: x - 1, y: y + 1) }
     
     var west: Point { Point(x: x - 1, y: y) }
     
