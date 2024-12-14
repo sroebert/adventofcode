@@ -6,7 +6,7 @@ struct Assignment202413: Assignment {
     func solvePart1() async throws -> AssignmentOutput {
         let clawMachines = try await getClawMachines()
         return await clawMachines.concurrentCount {
-            $0.costToWinPrice
+            $0.costToWinPrize
         }
     }
     
@@ -22,7 +22,7 @@ struct Assignment202413: Assignment {
         }
         
         return await correctedClawMachines.concurrentCount {
-            $0.costToWinPrice
+            $0.costToWinPrize
         }
     }
     
@@ -33,22 +33,21 @@ struct Assignment202413: Assignment {
         var buttonB: Point
         var prize: Point
         
-        var costToWinPrice: Int {
-            var minimumCost = Int.max
-            for b in 1...100 {
-                for a in 1...100 {
-                    if buttonA.x * a + buttonB.x * b == prize.x &&
-                        buttonA.y * a + buttonB.y * b == prize.y {
-                        
-                        let cost = a * 3 + b
-                        if cost < minimumCost {
-                            minimumCost = cost
-                        }
-                    }
-                }
+        var costToWinPrize: Int {
+            // Equations you get when solving:
+            // pX = aX * a + bX * b
+            // py = aY * a + bY * b
+            
+            let a = (prize.y * buttonB.x - prize.x * buttonB.y) / (buttonA.y * buttonB.x - buttonA.x * buttonB.y)
+            let b = (prize.x * buttonA.y - prize.y * buttonA.x) / (buttonA.y * buttonB.x - buttonA.x * buttonB.y)
+            guard
+                a * buttonA.x + b * buttonB.x == prize.x,
+                a * buttonA.y + b * buttonB.y == prize.y
+            else {
+                return 0
             }
             
-            return minimumCost == Int.max ? 0 : minimumCost
+            return a * 3 + b
         }
     }
     
