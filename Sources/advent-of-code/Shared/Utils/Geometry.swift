@@ -28,6 +28,23 @@ struct Point: Hashable {
         return newPoint
     }
     
+    static func *=(lhs: inout Point, rhs: Int) {
+        lhs.x *= rhs
+        lhs.y *= rhs
+    }
+    
+    static func *(lhs: Point, rhs: Int) -> Point {
+        var newPoint = lhs
+        newPoint *= rhs
+        return newPoint
+    }
+    
+    static func *(lhs: Int, rhs: Point) -> Point {
+        var newPoint = rhs
+        newPoint *= lhs
+        return newPoint
+    }
+    
     var north: Point { Point(x: x, y: y - 1) }
     var northEast: Point { Point(x: x + 1, y: y - 1) }
     var northWest: Point { Point(x: x - 1, y: y - 1) }
@@ -95,3 +112,44 @@ struct Rect {
     }
 }
 
+enum CardinalDirection {
+    case north
+    case south
+    case east
+    case west
+    
+    var step: Point {
+        switch self {
+        case .north: return Point(x: 0, y: -1)
+        case .south: return Point(x: 0, y: 1)
+        case .east: return Point(x: 1, y: 0)
+        case .west: return Point(x: -1, y: 0)
+        }
+    }
+    
+    mutating func rotateLeft() {
+        self = rotatedLeft
+    }
+    
+    var rotatedLeft: CardinalDirection {
+        switch self {
+        case .north: return .west
+        case .west: return .south
+        case .south: return .east
+        case .east: return .north
+        }
+    }
+    
+    mutating func rotateRight() {
+        self = rotatedRight
+    }
+    
+    var rotatedRight: CardinalDirection {
+        switch self {
+        case .north: return .east
+        case .east: return .south
+        case .south: return .west
+        case .west: return .north
+        }
+    }
+}

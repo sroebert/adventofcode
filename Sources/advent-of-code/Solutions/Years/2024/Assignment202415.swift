@@ -4,8 +4,8 @@ struct Assignment202415: Assignment {
     
     func solvePart1() async throws -> AssignmentOutput {
         var (map, robotLocation, moves) = try await getWarehouse()
-        for move in moves {
-            move.executeOnRobot(from: &robotLocation, on: &map)
+        for direction in moves {
+            moveRobot(from: &robotLocation, in: direction, on: &map)
         }
         return summedGpsCoordinates(forBoxesOn: map)
     }
@@ -15,8 +15,8 @@ struct Assignment202415: Assignment {
         var wideMap = widenMap(map)
         var wideRobotLocation = Point(x: robotLocation.x * 2, y: robotLocation.y)
         
-        for move in moves {
-            move.executeOnRobot(from: &wideRobotLocation, on: &wideMap)
+        for direction in moves {
+            moveRobot(from: &wideRobotLocation, in: direction, on: &wideMap)
         }
         return summedGpsCoordinates(forBoxesOn: wideMap)
     }
@@ -55,96 +55,88 @@ struct Assignment202415: Assignment {
         }
     }
     
-    private enum RobotMove {
-        case up
-        case down
-        case left
-        case right
+    private func moveRobot(
+        from location: inout Point,
+        in direction: CardinalDirection,
+        on map: inout Map
+    ) {
+        let step = direction.step
         
-        var direction: Point {
-            switch self {
-            case .up: return Point(x: 0, y: -1)
-            case .down: return Point(x: 0, y: 1)
-            case .left: return Point(x: -1, y: 0)
-            case .right: return Point(x: 1, y: 0)
-            }
+        var isMovingTowardsBox = false
+        var nextLocation = location + step
+        while map[nextLocation.y][nextLocation.x] == .box {
+            nextLocation += step
+            isMovingTowardsBox = true
         }
         
-        func executeOnRobot(from location: inout Point, on map: inout Map) {
-            let direction = direction
-            
-            var isMovingTowardsBox = false
-            var nextLocation = location + direction
-            while map[nextLocation.y][nextLocation.x] == .box {
-                nextLocation += direction
-                isMovingTowardsBox = true
-            }
-            
-            guard map[nextLocation.y][nextLocation.x] == .empty else {
-                return
-            }
-            
-            if isMovingTowardsBox {
-                map[nextLocation.y][nextLocation.x] = .box
-            }
-            
-            map[location.y][location.x] = .empty
-            location += direction
-            map[location.y][location.x] = .robot
+        guard map[nextLocation.y][nextLocation.x] == .empty else {
+            return
         }
         
-        func executeOnRobot(from robotLocation: inout Point, on map: inout WideMap) {
-            let direction = direction
-            let isVertical = direction.y != 0
+        if isMovingTowardsBox {
+            map[nextLocation.y][nextLocation.x] = .box
+        }
+        
+        map[location.y][location.x] = .empty
+        location += step
+        map[location.y][location.x] = .robot
+    }
+    
+    private func moveRobot(
+        from robotLocation: inout Point,
+        in direction: CardinalDirection,
+        on map: inout WideMap
+    ) {
+        let step = direction.step
+        let isVertical = step.y != 0
+        
+        var boxesBeingMoved: [Point] = []
+        
+        var locationsToCheck = [robotLocation + step]
+        while !locationsToCheck.isEmpty {
+            var nextLocations: [Point] = []
             
-            var boxesBeingMoved: [Point] = []
-            
-            var locationsToCheck = [robotLocation + direction]
-            while !locationsToCheck.isEmpty {
-                var nextLocations: [Point] = []
-                
-                for location in locationsToCheck {
-                    switch map[location.y][location.x] {
-                    case .boxLeft:
-                        boxesBeingMoved.append(location)
-                        if isVertical {
-                            nextLocations.append(location + direction)
-                        }
-                        nextLocations.append(Point(x: location.x + 1, y: location.y) + direction)
-                        
-                    case .boxRight:
-                        let boxLeftLocation = Point(x: location.x - 1, y: location.y)
-                        boxesBeingMoved.append(boxLeftLocation)
-                        nextLocations.append(boxLeftLocation + direction)
-                        if isVertical {
-                            nextLocations.append(location + direction)
-                        }
-                        
-                    case .wall:
-                        // Cannot move
-                        return
-                        
-                    default:
-                        break
+            for location in locationsToCheck {
+                switch map[location.y][location.x] {
+                case .boxLeft:
+                    boxesBeingMoved.append(location)
+                    if isVertical {
+                        nextLocations.append(location + step)
                     }
+                    nextLocations.append(Point(x: location.x + 1, y: location.y) + step)
+                    
+                case .boxRight:
+                    let boxLeftLocation = Point(x: location.x - 1, y: location.y)
+                    boxesBeingMoved.append(boxLeftLocation)
+                    nextLocations.append(boxLeftLocation + step)
+                    if isVertical {
+                        nextLocations.append(location + step)
+                    }
+                    
+                case .wall:
+                    // Cannot move
+                    return
+                    
+                default:
+                    break
                 }
-                
-                locationsToCheck = nextLocations
             }
             
-            for boxLocation in boxesBeingMoved.reversed() {
-                map[boxLocation.y][boxLocation.x] = .empty
-                map[boxLocation.y][boxLocation.x + 1] = .empty
-                
-                let newBoxLocation = boxLocation + direction
-                map[newBoxLocation.y][newBoxLocation.x] = .boxLeft
-                map[newBoxLocation.y][newBoxLocation.x + 1] = .boxRight
-            }
-            
-            map[robotLocation.y][robotLocation.x] = .empty
-            robotLocation += direction
-            map[robotLocation.y][robotLocation.x] = .robot
+            locationsToCheck = nextLocations
         }
+        
+        for boxLocation in boxesBeingMoved.reversed() {
+            map[boxLocation.y][boxLocation.x] = .empty
+            map[boxLocation.y][boxLocation.x + 1] = .empty
+            
+            let newBoxLocation = boxLocation + step
+            map[newBoxLocation.y][newBoxLocation.x] = .boxLeft
+            map[newBoxLocation.y][newBoxLocation.x + 1] = .boxRight
+        }
+        
+        map[robotLocation.y][robotLocation.x] = .empty
+        robotLocation += step
+        map[robotLocation.y][robotLocation.x] = .robot
     }
     
     private func summedGpsCoordinates(forBoxesOn map: Map) -> Int {
@@ -200,7 +192,7 @@ struct Assignment202415: Assignment {
         }
     }
     
-    private func getWarehouse() async throws -> (map: Map, robotLocation: Point, moves: [RobotMove]) {
+    private func getWarehouse() async throws -> (map: Map, robotLocation: Point, moves: [CardinalDirection]) {
         let input = try await getInput()
         
         let parts = input.split(separator: "\n\n")
@@ -232,13 +224,13 @@ struct Assignment202415: Assignment {
             throw InputError(message: "Invalid input")
         }
         
-        let moves: [RobotMove] = try parts[1].split(separator: "\n").flatMap { line in
+        let moves: [CardinalDirection] = try parts[1].split(separator: "\n").flatMap { line in
             try line.map {
                 switch $0 {
-                case "^": .up
-                case "<": .left
-                case ">": .right
-                case "v": .down
+                case "^": .north
+                case "<": .west
+                case ">": .east
+                case "v": .south
                 default: throw InputError(message: "Invalid input")
                 }
             }
